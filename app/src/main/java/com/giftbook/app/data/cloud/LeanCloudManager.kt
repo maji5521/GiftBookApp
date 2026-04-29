@@ -2,8 +2,13 @@ package com.giftbook.app.data.cloud
 
 import android.content.Context
 import cn.leancloud.*
+import cn.leancloud.core.LeanCloud
+import cn.leancloud.core.LeanService
+import cn.leancloud.json.JSONArray
+import cn.leancloud.types.LCNull
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
+import java.util.*
 
 /**
  * LeanCloud 云服务管理器
@@ -20,10 +25,8 @@ object LeanCloudManager {
     fun init(context: Context, appId: String, appKey: String, serverUrl: String) {
         if (initialized) return
 
-        LCApplication.setApplicationId(appId)
-        LCApplication.setClientKey(appKey)
-        LCApplication.setServerUrl(serverUrl)
-        LCApplication.setAllLogEnabled(BuildConfig.DEBUG)
+        LeanCloud.initialize(appId, appKey, serverUrl)
+        LeanCloud.setLogLevel(LCLogger.Level.ERROR)
 
         initialized = true
     }
@@ -43,6 +46,7 @@ object LeanCloudManager {
             override fun onError(e: Throwable) {
                 callback(false, e.message)
             }
+            override fun onComplete() {}
         })
     }
 
@@ -51,14 +55,15 @@ object LeanCloudManager {
      */
     fun saveGifts(entities: List<com.giftbook.app.data.db.GiftEntity>, callback: (Boolean, String?) -> Unit) {
         val objects = entities.map { CloudGift(it) as LCObject }
-        LCObject.saveAllInBackground(objects).subscribe(object : Observer<kotlin.Boolean> {
+        LCObject.saveAllInBackground(objects).subscribe(object : Observer<JSONArray> {
             override fun onSubscribe(d: Disposable) {}
-            override fun onNext(t: kotlin.Boolean) {
-                callback(t, null)
+            override fun onNext(t: JSONArray) {
+                callback(true, null)
             }
             override fun onError(e: Throwable) {
                 callback(false, e.message)
             }
+            override fun onComplete() {}
         })
     }
 
@@ -66,20 +71,19 @@ object LeanCloudManager {
      * 查询当前用户的所有记录
      */
     fun queryAllGifts(userId: String, callback: (List<com.giftbook.app.data.db.GiftEntity>?, String?) -> Unit) {
-        val query = LCQuery(CloudGift.CLASS_NAME)
+        val query = LCQuery<CloudGift>(CloudGift.CLASS_NAME)
         query.whereEqualTo("userId", userId)
         query.orderByDescending("date")
-        query.findInBackground().subscribe(object : Observer<List<LCObject>> {
+        query.findInBackground().subscribe(object : Observer<List<CloudGift>> {
             override fun onSubscribe(d: Disposable) {}
-            override fun onNext(t: List<LCObject>) {
-                val entities = t.mapNotNull {
-                    (it as? CloudGift)?.toEntity()
-                }
+            override fun onNext(t: List<CloudGift>) {
+                val entities = t.mapNotNull { it.toEntity() }
                 callback(entities, null)
             }
             override fun onError(e: Throwable) {
                 callback(null, e.message)
             }
+            override fun onComplete() {}
         })
     }
 
@@ -108,6 +112,7 @@ object LeanCloudManager {
             override fun onError(e: Throwable) {
                 callback(false, e.message)
             }
+            override fun onComplete() {}
         })
     }
 
@@ -117,14 +122,15 @@ object LeanCloudManager {
     fun deleteGift(cloudObjectId: String, callback: (Boolean, String?) -> Unit) {
         val cloudGift = CloudGift()
         cloudGift.objectId = cloudObjectId
-        cloudGift.deleteInBackground().subscribe(object : Observer<LCObject> {
+        cloudGift.deleteInBackground().subscribe(object : Observer<LCNull> {
             override fun onSubscribe(d: Disposable) {}
-            override fun onNext(t: LCObject) {
+            override fun onNext(t: LCNull) {
                 callback(true, null)
             }
             override fun onError(e: Throwable) {
                 callback(false, e.message)
             }
+            override fun onComplete() {}
         })
     }
 
@@ -141,6 +147,7 @@ object LeanCloudManager {
             override fun onError(e: Throwable) {
                 callback(null, e.message)
             }
+            override fun onComplete() {}
         })
     }
 }

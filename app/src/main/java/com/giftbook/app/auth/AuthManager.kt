@@ -4,11 +4,17 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
-import cn.leancloud.*
+import cn.leancloud.LCUser
+import cn.leancloud.sms.LCSMS
+import cn.leancloud.sms.LCSMSOption
+import cn.leancloud.types.LCNull
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_prefs")
 
@@ -20,15 +26,15 @@ class AuthManager(private val context: Context) {
 
     /** 当前用户是否已登录 */
     val isLoggedIn: Boolean
-        get() = LCUser.getCurrentUser() != null
+        get() = LCUser.currentUser() != null
 
     /** 当前用户 ID */
     val currentUserId: String?
-        get() = LCUser.getCurrentUser()?.objectId
+        get() = LCUser.currentUser()?.objectId
 
     /** 当前用户名（手机号或微信昵称） */
     val currentUserName: String?
-        get() = LCUser.getCurrentUser()?.username
+        get() = LCUser.currentUser()?.username
 
     /** 登录状态 Flow */
     val loginStateFlow: Flow<Boolean> = context.dataStore.data.map { prefs ->
@@ -41,10 +47,9 @@ class AuthManager(private val context: Context) {
      * 发送短信验证码
      */
     fun sendSmsCode(phone: String, callback: (Boolean, String?) -> Unit) {
-        val options = LCSMSOption().apply {
-            templateName = "LoginTemplate"  // 在 LeanCloud 控制台配置
-            signatureName = "人情往来"
-        }
+        val options = LCSMSOption()
+        options.setTemplateName("LoginTemplate")
+        options.setSignatureName("人情往来")
         LCSMS.requestSMSCodeInBackground(phone, options)
             .subscribe(object : Observer<LCNull> {
                 override fun onSubscribe(d: Disposable) {}
@@ -54,6 +59,7 @@ class AuthManager(private val context: Context) {
                 override fun onError(e: Throwable) {
                     callback(false, e.localizedMessage ?: "发送失败")
                 }
+                override fun onComplete() {}
             })
     }
 
@@ -72,6 +78,7 @@ class AuthManager(private val context: Context) {
                 override fun onError(e: Throwable) {
                     callback(false, e.localizedMessage ?: "登录失败")
                 }
+                override fun onComplete() {}
             })
     }
 
@@ -79,24 +86,21 @@ class AuthManager(private val context: Context) {
 
     /**
      * 微信登录
-     * @param authData 从微信 SDK 获取的 {access_token, openid, unionId}
+     * @param authData 从微信 SDK 获取的 {access_token, openid}
      */
     fun loginWithWechat(authData: Map<String, Any>, unionId: String, callback: (Boolean, String?) -> Unit) {
-        AVUser.loginWithAuthDataAndUnionIdInBackground(
-            authData,
-            "weixinapp",
-            unionId,
-            AVUser.AVUserAuthDataLoginOption()
-        ).subscribe(object : Observer<AVUser> {
-            override fun onSubscribe(d: Disposable) {}
-            override fun onNext(user: AVUser) {
-                saveLoginState(true)
-                callback(true, null)
-            }
-            override fun onError(e: Throwable) {
-                callback(false, e.localizedMessage ?: "微信登录失败")
-            }
-        })
+        LCUser.loginWithAuthData(authData, "weixin", unionId, "", true)
+            .subscribe(object : Observer<LCUser> {
+                override fun onSubscribe(d: Disposable) {}
+                override fun onNext(user: LCUser) {
+                    saveLoginState(true)
+                    callback(true, null)
+                }
+                override fun onError(e: Throwable) {
+                    callback(false, e.localizedMessage ?: "微信登录失败")
+                }
+                override fun onComplete() {}
+            })
     }
 
     /**
@@ -116,23 +120,15 @@ class AuthManager(private val context: Context) {
      * 退出登录
      */
     fun logout(callback: () -> Unit = {}) {
-        LCUser.logOutInBackground().subscribe(object : Observer<LCNull> {
-            override fun onSubscribe(d: Disposable) {}
-            override fun onNext(t: LCNull) {
-                saveLoginState(false)
-                callback()
-            }
-            override fun onError(e: Throwable) {
-                saveLoginState(false)
-                callback()
-            }
-        })
+        LCUser.logOut()
+        saveLoginState(false)
+        callback()
     }
 
     // ==================== 状态持久化 ====================
 
     private fun saveLoginState(isLoggedIn: Boolean) {
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             context.dataStore.edit { prefs ->
                 prefs[LOGIN_STATE_KEY] = isLoggedIn
             }

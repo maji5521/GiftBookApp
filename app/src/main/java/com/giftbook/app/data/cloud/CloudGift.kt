@@ -8,11 +8,11 @@ import java.util.*
  * LeanCloud 云端数据结构映射
  * 对应云端的 "Gift" 表
  */
-class CloudGift : LCObject("Gift") {
+class CloudGift : LCObject {
 
-    constructor() : super()
+    constructor() : super("Gift")
 
-    constructor(entity: com.giftbook.app.data.db.GiftEntity) : super() {
+    constructor(entity: com.giftbook.app.data.db.GiftEntity) : super("Gift") {
         put("clientId", entity.id)
         put("userId", entity.ownerId)
         put("name", entity.name)

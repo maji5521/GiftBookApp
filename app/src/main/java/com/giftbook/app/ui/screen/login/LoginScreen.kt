@@ -5,7 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Wechat
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.giftbook.app.GiftBookApp
 import com.giftbook.app.auth.AuthManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +69,7 @@ fun LoginScreen(
                 selected = selectedTab == 0,
                 onClick = { selectedTab = 0 },
                 text = { Text("微信登录") },
-                icon = { Icon(Icons.Default.Wechat, contentDescription = null) }
+                icon = { Icon(Icons.Default.Star, contentDescription = null) }
             )
             Tab(
                 selected = selectedTab == 1,
@@ -156,7 +157,7 @@ private fun WechatLoginSection(
                 strokeWidth = 2.dp
             )
         } else {
-            Icon(Icons.Default.Wechat, contentDescription = null)
+            Icon(Icons.Default.Star, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text("微信一键登录", fontSize = 16.sp)
         }
