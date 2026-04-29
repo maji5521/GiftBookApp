@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">人情往来</string>
+
+    <!-- Login -->
+    <string name="login_title">人情往来记账</string>
+    <string name="login_subtitle">记录每一份人情，传递每一份心意</string>
+    <string name="wechat_login">微信登录</string>
+    <string name="phone_login">手机号登录</string>
+    <string name="phone_hint">请输入手机号</string>
+    <string name="sms_code_hint">请输入验证码</string>
+    <string name="get_sms_code">获取验证码</string>
+    <string name="resend_sms">重新发送 (%ds)</string>
+    <string name="login_or_register">登录 / 注册</string>
+
+    <!-- Home -->
+    <string name="search_hint">输入姓名快速查询…</string>
+    <string name="total_records">总记录</string>
+    <string name="total_income">总收入</string>
+    <string name="total_expense">总支出</string>
+    <string name="recent_records">最近记录</string>
+    <string name="no_records">暂无记录</string>
+    <string name="add_record">添加记录</string>
+    <string name="scan_record">扫描账本</string>
+
+    <!-- Add/Edit -->
+    <string name="add_title">添加记录</string>
+    <string name="edit_title">编辑记录</string>
+    <string name="name_label">姓名</string>
+    <string name="amount_label">金额</string>
+    <string name="date_label">日期</string>
+    <string name="note_label">备注（事由）</string>
+    <string name="direction_income">收入</string>
+    <string name="direction_expense">支出</string>
+    <string name="save">保存</string>
+    <string name="delete">删除</string>
+    <string name="cancel">取消</string>
+    <string name="confirm_delete">确认删除这条记录？</string>
+
+    <!-- Scan -->
+    <string name="scan_hint">将账本放在取景框内</string>
+    <string name="take_photo">拍照</string>
+    <string name="ocr_processing">正在识别…</string>
+    <string name="ocr_result">识别结果</string>
+    <string name="confirm_import">确认导入</string>
+    <string name="correct_result">点击校正识别结果</string>
+
+    <!-- Person Detail -->
+    <string name="person_total">合计</string>
+    <string name="person_times">次数</string>
+
+    <!-- Sync -->
+    <string name="syncing">同步中…</string>
+    <string name="sync_success">同步完成</string>
+    <string name="sync_failed">同步失败</string>
+    <string name="offline_mode">离线模式</string>
+
+    <!-- Common -->
+    <string name="yes">确定</string>
+    <string name="no">取消</string>
+    <string name="loading">加载中…</string>
+    <string name="error_occurred">操作失败，请重试</string>
+    <string name="retry">重试</string>
+</resources>
