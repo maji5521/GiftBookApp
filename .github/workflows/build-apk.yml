@@ -19,9 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Android SDK
-        uses: actions/setup-android@v4
-        with:
-          cache-key: 'android-${{ runner.os }}-${{ hashFiles(''**/build.gradle.kts'') }}'
+        uses: android-actions/setup-android@v3
 
       - name: Grant execute permission
         run: chmod +x gradlew
