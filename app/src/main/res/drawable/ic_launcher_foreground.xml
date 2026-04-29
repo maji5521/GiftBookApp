@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Gift box icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,44h32v26h-32z"/>
+    <path
+        android:fillColor="#FFCDD2"
+        android:pathData="M35,42h38v4h-38z"/>
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:pathData="M54,44v26M44,49l10,-5M64,49l-10,-5"/>
+</vector>
