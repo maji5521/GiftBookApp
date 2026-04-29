@@ -81,8 +81,7 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
 
     // LeanCloud
-    implementation("cn.leancloud:storage-android:8.2.17")
-    implementation("cn.leancloud:im-android:8.2.17")
+    implementation("cn.leancloud:storage-android:8.2.28")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
 
     // CameraX
